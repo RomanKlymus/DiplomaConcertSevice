@@ -32,6 +32,9 @@ public class Account {
     @OneToMany(mappedBy = "organizer")
     private Set<Event> organizersEvent;
 
+    @OneToMany
+    private Set<Ticket> tickets;
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

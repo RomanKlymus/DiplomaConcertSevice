@@ -1,9 +1,17 @@
 package com.rklymus.diplomaconcertservice.service.impls;
 
+import com.rklymus.diplomaconcertservice.dto.event.EventCreationProfile;
 import com.rklymus.diplomaconcertservice.dto.event.EventPreview;
+import com.rklymus.diplomaconcertservice.entity.Account;
+import com.rklymus.diplomaconcertservice.entity.Event;
 import com.rklymus.diplomaconcertservice.repository.EventRepository;
+import com.rklymus.diplomaconcertservice.service.AccountService;
 import com.rklymus.diplomaconcertservice.service.EventService;
+import com.rklymus.diplomaconcertservice.service.PlaceService;
+import com.rklymus.diplomaconcertservice.service.TicketService;
+import com.rklymus.diplomaconcertservice.util.RepoUtil;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -16,21 +24,35 @@ import java.util.stream.Collectors;
 @Service
 @Transactional
 public class EventServiceImpl implements EventService {
-
-    private final EventRepository eventRepository;
-    private final ModelMapper modelMapper;
-
-    public EventServiceImpl(EventRepository eventRepository, ModelMapper modelMapper) {
-        this.eventRepository = eventRepository;
-        this.modelMapper = modelMapper;
-    }
+    @Autowired
+    private EventRepository eventRepository;
+    @Autowired
+    private ModelMapper modelMapper;
+    @Autowired
+    private TicketService ticketService;
+    @Autowired
+    private AccountService accountService;
+    @Autowired
+    private PlaceService placeService;
+    @Autowired
+    private RepoUtil repoUtil;
 
     @Override
     public Page<EventPreview> getAllEvents(Pageable pageable) {
         List<EventPreview> list =
                 eventRepository.findAll(pageable).stream()
-                .map(event -> modelMapper.map(event, EventPreview.class))
-                .collect(Collectors.toList());
+                        .map(event -> modelMapper.map(event, EventPreview.class))
+                        .collect(Collectors.toList());
         return new PageImpl<>(list, pageable, list.size());
+    }
+
+    @Override
+    public void addEvent(EventCreationProfile eventDto) {
+        Event event = modelMapper.map(eventDto, Event.class);
+        event.setOrganizer(repoUtil.findById(Account.class, eventDto.getOrganizerId()));
+        event.setPlace(placeService.getPlace(eventDto.getOrganizerId()));
+        Event savedEvent = eventRepository.save(event);
+        ticketService.createTickets(savedEvent, eventDto.getTickets());
+        //todo: complete method
     }
 }

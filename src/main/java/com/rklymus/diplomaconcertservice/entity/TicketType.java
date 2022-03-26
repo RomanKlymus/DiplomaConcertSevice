@@ -5,41 +5,32 @@ import lombok.Setter;
 import org.hibernate.Hibernate;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
 import java.util.Objects;
-import java.util.Set;
 
 @Entity
-@Getter
 @Setter
-@Table(name = "events")
-public class Event {
+@Getter
+@Table(name = "tickets_types")
+public class TicketType {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Column(nullable = false)
-    private String title;
-    @Column(nullable = false, length = 10000)
-    private String description;
-    @ManyToOne
-    @JoinColumn(name = "organizer_id", nullable = false)
-    private Account organizer;
-    @Column(nullable = false)
-    private LocalDateTime startDateAndTime;
+    private String name;
     @Column
-    private LocalDateTime endDateAndTime;
+    private String description;
+    @Column(nullable = false)
+    private Long price;
     @ManyToOne
-    @JoinColumn(name = "place_id")
-    private Place place;
-    @OneToMany
-    private Set<TicketType> ticketsTypes;
+    @JoinColumn(name = "event_id", nullable = false)
+    private Event event;
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
-        Event event = (Event) o;
-        return id != null && Objects.equals(id, event.id);
+        TicketType ticketType = (TicketType) o;
+        return id != null && Objects.equals(id, ticketType.id);
     }
 
     @Override
