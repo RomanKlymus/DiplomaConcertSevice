@@ -5,6 +5,7 @@ import com.rklymus.diplomaconcertservice.dto.event.EventPreview;
 import com.rklymus.diplomaconcertservice.entity.Account;
 import com.rklymus.diplomaconcertservice.entity.Event;
 import com.rklymus.diplomaconcertservice.repository.EventRepository;
+import com.rklymus.diplomaconcertservice.security.CustomUserDetails;
 import com.rklymus.diplomaconcertservice.service.AccountService;
 import com.rklymus.diplomaconcertservice.service.EventService;
 import com.rklymus.diplomaconcertservice.service.PlaceService;
@@ -15,6 +16,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -49,8 +53,8 @@ public class EventServiceImpl implements EventService {
     @Override
     public void addEvent(EventCreationProfile eventDto) {
         Event event = modelMapper.map(eventDto, Event.class);
-        event.setOrganizer(repoUtil.findById(Account.class, eventDto.getOrganizerId()));
-        event.setPlace(placeService.getPlace(eventDto.getOrganizerId()));
+        event.setOrganizer(accountService.getCurrentAccount());
+        event.setPlace(placeService.getPlace(eventDto.getPlaceId()));
         Event savedEvent = eventRepository.save(event);
         ticketService.createTickets(savedEvent, eventDto.getTickets());
         //todo: complete method

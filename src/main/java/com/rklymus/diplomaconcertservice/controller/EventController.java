@@ -9,11 +9,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @CrossOrigin
-@Api( tags = "Events")
+@Api(tags = "Events")
 public class EventController {
     private final EventService eventService;
 
@@ -21,7 +22,6 @@ public class EventController {
     public EventController(EventService eventService) {
         this.eventService = eventService;
     }
-
 
     @GetMapping("/events")
     @ApiOperation(value = "Get all events")
@@ -31,6 +31,7 @@ public class EventController {
 
     @PostMapping("/event")
     @ApiOperation(value = "Create new event")
+    @PreAuthorize("hasRole('ROLE_ORGANIZER')")
     public void addEvent(@RequestBody EventCreationProfile event) {
         eventService.addEvent(event);
     }

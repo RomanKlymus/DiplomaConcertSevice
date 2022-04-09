@@ -28,7 +28,6 @@ public class AuthController {
 
     @PostMapping("/signin")
     public String signin(@RequestBody AuthRequest request) {
-        //todo: complete method
         return accountService.login(request);
     }
 }

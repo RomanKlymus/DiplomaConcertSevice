@@ -13,6 +13,8 @@ import com.rklymus.diplomaconcertservice.service.AccountService;
 import com.rklymus.diplomaconcertservice.util.RepoUtil;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -63,7 +65,15 @@ public class AccountServiceImpl implements AccountService {
         if (!passwordEncoder.matches(request.getPassword(), account.getPassword())) {
             throw new LoginFailException(LOGIN_FAIL_MESSAGE);
         }
-        return jwtProvider.generateToken(account.getEmail(), account.getRole().getName());
+        return "Bearer " + jwtProvider.generateToken(account.getEmail(), account.getRole().getName());
+    }
+
+    @Override
+    public Account getCurrentAccount() {
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String email = userDetails.getUsername();
+
+        return getAccountByEmail(email);
     }
 
     @Autowired

@@ -24,21 +24,25 @@ public class JwtFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, FilterChain filterChain) throws ServletException, IOException {
-        log.info("do filter...");
+        log.info("JWT filter started");
         String token = getTokenFromRequest(httpServletRequest);
+        log.info("Processing token:" + token);
         if (token != null && jwtProvider.validateToken(token)) {
+            log.info("Token is correct");
             String userEmail = jwtProvider.getLoginFromToken(token);
+            log.info("User: " + userEmail);
             UserDetails customUserDetails = customUserDetailsService.loadUserByUsername(userEmail);
             UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(customUserDetails, null, customUserDetails.getAuthorities());
             SecurityContextHolder.getContext().setAuthentication(auth);
         }
         filterChain.doFilter(httpServletRequest, httpServletResponse);
+        log.info("JWT filter finished");
     }
 
     private String getTokenFromRequest(HttpServletRequest request) {
         String bearer = request.getHeader(AUTHORIZATION);
-        if (StringUtils.hasText(bearer) && bearer.startsWith("Bearer ")) {
-            return bearer.substring(7);
+        if (StringUtils.hasText(bearer) && bearer.startsWith(JwtProvider.TOKEN_PREFIX)) {
+            return bearer.substring(JwtProvider.TOKEN_PREFIX.length());
         }
         return null;
     }

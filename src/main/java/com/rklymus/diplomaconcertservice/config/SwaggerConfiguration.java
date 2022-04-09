@@ -23,9 +23,9 @@ public class SwaggerConfiguration {
                 "API developed for my diploma project.",
                 "1.0",
                 "Terms of service",
-                new Contact("Roman Klymus", "github.com/RomanKlymus", "klimusr@gmail.com"),
-                "None",
-                "None",
+                new Contact("Roman Klymus", "githu  b.com/RomanKlymus", "klimusr@gmail.com"),
+                null,
+                null,
                 Collections.emptyList());
     }
 

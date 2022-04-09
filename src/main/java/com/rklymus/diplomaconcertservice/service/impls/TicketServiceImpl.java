@@ -43,6 +43,7 @@ public class TicketServiceImpl implements TicketService {
                 tickets.add(Ticket.builder().event(event).status(TicketStatus.NOT_BOUGHT).ticketType(createdTypes.get(i)).build());
             }
         }
+        //todo: change return type
         return ticketRepository.saveAll(tickets);
     }
 }

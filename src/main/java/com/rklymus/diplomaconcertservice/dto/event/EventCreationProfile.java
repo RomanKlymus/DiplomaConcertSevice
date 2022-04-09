@@ -14,7 +14,6 @@ public class EventCreationProfile {
     private String title;
     @NotBlank
     private String description;
-    private Long organizerId;
     @NotNull
     private LocalDateTime startDateAndTime;
     private LocalDateTime endDateAndTime;

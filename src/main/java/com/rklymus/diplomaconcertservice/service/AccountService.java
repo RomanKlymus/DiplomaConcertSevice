@@ -12,4 +12,6 @@ public interface AccountService {
     void createAccount(RegistrationRequest request);
 
     String login(AuthRequest request);
+
+    Account getCurrentAccount();
 }
