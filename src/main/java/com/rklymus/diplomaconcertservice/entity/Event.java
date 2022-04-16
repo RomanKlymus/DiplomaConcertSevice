@@ -31,6 +31,8 @@ public class Event {
     @ManyToOne
     @JoinColumn(name = "place_id")
     private Place place;
+    @Enumerated(EnumType.STRING)
+    private EventStatus status;
     @OneToMany
     private Set<TicketType> ticketsTypes;
 

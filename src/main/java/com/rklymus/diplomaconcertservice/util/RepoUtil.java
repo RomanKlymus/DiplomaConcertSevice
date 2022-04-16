@@ -18,12 +18,18 @@ public class RepoUtil {
         repositories = new Repositories(webApplicationContext);
     }
 
-    public <T, ID> T findById(Class<T> entityClass, ID id) {
+    private <T, ID> JpaRepository<T, ID> getJpaRepository(Class<T> entityClass) {
         Object obj = repositories.getRepositoryFor(entityClass)
                 .orElseThrow(() -> new IllegalArgumentException(String.format(REPO_NOT_FOUND, entityClass)));
-        JpaRepository<T, ID> repo = (JpaRepository<T, ID>) obj;
+        return (JpaRepository<T, ID>) obj;
+    }
 
-        return repo.findById(id)
+    public <T, ID> T findById(Class<T> entityClass, ID id) {
+        return getJpaRepository(entityClass).findById(id)
                 .orElseThrow(() -> new NotFoundException(String.format(ENTITY_NOT_FOUND, entityClass, id)));
+    }
+
+    public <T, ID> long count(Class<T> entityClass) {
+        return getJpaRepository(entityClass).count();
     }
 }

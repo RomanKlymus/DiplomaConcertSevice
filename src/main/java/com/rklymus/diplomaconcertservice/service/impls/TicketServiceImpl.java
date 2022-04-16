@@ -46,4 +46,14 @@ public class TicketServiceImpl implements TicketService {
         //todo: change return type
         return ticketRepository.saveAll(tickets);
     }
+
+    @Override
+    public List<TicketType> getTicketsByEvent(Event event) {
+        return null;
+    }
+
+    @Override
+    public long getAmountOfTickets(TicketType ticket) {
+        return 0;
+    }
 }

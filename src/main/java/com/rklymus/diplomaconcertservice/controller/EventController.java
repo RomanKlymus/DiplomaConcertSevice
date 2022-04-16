@@ -1,7 +1,9 @@
 package com.rklymus.diplomaconcertservice.controller;
 
 import com.rklymus.diplomaconcertservice.dto.event.EventCreationProfile;
+import com.rklymus.diplomaconcertservice.dto.event.EventEditingProfile;
 import com.rklymus.diplomaconcertservice.dto.event.EventPreview;
+import com.rklymus.diplomaconcertservice.dto.event.EventProfile;
 import com.rklymus.diplomaconcertservice.service.EventService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -15,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @CrossOrigin
 @Api(tags = "Events")
+@RequestMapping("/events")
 public class EventController {
     private final EventService eventService;
 
@@ -23,16 +26,27 @@ public class EventController {
         this.eventService = eventService;
     }
 
-    @GetMapping("/events")
+    @GetMapping
     @ApiOperation(value = "Get all events")
     public Page<EventPreview> getAllEvents(@PageableDefault Pageable pageable) {
         return eventService.getAllEvents(pageable);
     }
 
-    @PostMapping("/event")
+    @GetMapping("/{id}")
+    public EventProfile getEvent(@PathVariable Long id) {
+        return eventService.getEventProfile(id);
+    }
+
+    @PostMapping
     @ApiOperation(value = "Create new event")
     @PreAuthorize("hasRole('ROLE_ORGANIZER')")
     public void addEvent(@RequestBody EventCreationProfile event) {
         eventService.addEvent(event);
     }
+
+    @PutMapping("/{id}")
+    public void editEvent(@PathVariable Long id, @RequestBody EventEditingProfile event) {
+        eventService.editEvent(id, event);
+    }
+
 }
