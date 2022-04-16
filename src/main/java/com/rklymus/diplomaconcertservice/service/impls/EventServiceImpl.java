@@ -9,6 +9,7 @@ import com.rklymus.diplomaconcertservice.dto.place.PlacePreview;
 import com.rklymus.diplomaconcertservice.dto.ticket.TicketProfile;
 import com.rklymus.diplomaconcertservice.entity.Event;
 import com.rklymus.diplomaconcertservice.entity.TicketType;
+import com.rklymus.diplomaconcertservice.exception.ForbiddenOperationException;
 import com.rklymus.diplomaconcertservice.repository.EventRepository;
 import com.rklymus.diplomaconcertservice.service.AccountService;
 import com.rklymus.diplomaconcertservice.service.EventService;
@@ -20,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -80,13 +82,15 @@ public class EventServiceImpl implements EventService {
         event.setPlace(placeService.getPlace(eventDto.getPlaceId()));
         Event savedEvent = eventRepository.save(event);
         ticketService.createTickets(savedEvent, eventDto.getTickets());
-        //todo: complete method(?)
     }
 
     //todo: test
     @Override
     public void editEvent(Long id, EventEditingProfile event) {
         Event eventToEdit = getEvent(id);
+        if(!eventToEdit.getOrganizer().equals(accountService.getCurrentAccount())) {
+            throw new ForbiddenOperationException();
+        }
         modelMapper.map(event, eventToEdit);
         eventToEdit.setPlace(placeService.getPlace(event.getPlaceId()));
         eventRepository.save(eventToEdit);

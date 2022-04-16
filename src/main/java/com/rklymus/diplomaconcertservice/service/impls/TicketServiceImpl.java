@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -35,12 +36,16 @@ public class TicketServiceImpl implements TicketService {
     public List<Ticket> createTickets(Event event, List<TicketTypeCreation> typeCreationList) {
         Collection<Ticket> tickets = new LinkedList<>();
         List<TicketType> createdTypes = ticketTypeRepository.saveAll(
-                typeCreationList.stream().map(type -> modelMapper.map(type, TicketType.class)).collect(Collectors.toList()));
+                typeCreationList.stream().map(type -> {
+                    TicketType ticketType = modelMapper.map(type, TicketType.class);
+                    ticketType.setEvent(event);
+                    return ticketType;
+                }).collect(Collectors.toList()));
 
         for (int i = 0; i < createdTypes.size(); i++) {
             TicketTypeCreation ticketType = typeCreationList.get(i);
             for (int j = 0; j < ticketType.getNumberOfTickets(); j++) {
-                tickets.add(Ticket.builder().event(event).status(TicketStatus.NOT_BOUGHT).ticketType(createdTypes.get(i)).build());
+                tickets.add(Ticket.builder().id(UUID.randomUUID().toString()).event(event).status(TicketStatus.NOT_BOUGHT).ticketType(createdTypes.get(i)).build());
             }
         }
         //todo: change return type
@@ -49,7 +54,7 @@ public class TicketServiceImpl implements TicketService {
 
     @Override
     public List<TicketType> getTicketsByEvent(Event event) {
-        return null;
+        return ticketTypeRepository.getTicketTypeByEvent(event);
     }
 
     @Override

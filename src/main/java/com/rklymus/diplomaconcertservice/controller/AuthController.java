@@ -22,7 +22,7 @@ public class AuthController {
     }
 
     @PostMapping("/signup")
-    public void signup(@RequestBody @Valid RegistrationRequest request) {
+    public void signup(@RequestBody RegistrationRequest request) {
         accountService.createAccount(request);
     }
 

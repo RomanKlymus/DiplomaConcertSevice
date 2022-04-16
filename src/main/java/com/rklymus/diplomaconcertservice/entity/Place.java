@@ -18,6 +18,12 @@ public class Place {
     private String name;
     @Column
     private String phoneNumber;
+    @Column
+    private String website;
+    @Column
+    private String email;
+    @Column
+    private String city;
     @Column(nullable = false)
     private String address;
     @OneToMany(mappedBy = "place")

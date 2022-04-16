@@ -45,6 +45,7 @@ public class EventController {
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ROLE_ORGANIZER')")
     public void editEvent(@PathVariable Long id, @RequestBody EventEditingProfile event) {
         eventService.editEvent(id, event);
     }
